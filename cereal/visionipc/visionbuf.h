@@ -21,6 +21,7 @@ enum VisionStreamType {
   VISION_STREAM_RGB_WIDE_ROAD,
   VISION_STREAM_RGB_MAP,
   VISION_STREAM_MAX,
+  VISION_STREAM_RGB_DRIVER,
 };
 
 class VisionBuf {
