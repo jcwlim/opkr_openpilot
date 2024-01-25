@@ -174,6 +174,8 @@ def create_scc12(packer, apply_accel, enabled, scc_live, gaspressed, brakepresse
     values["ACCMode"] = 1 if enabled else 0 # 2 if gas padel pressed
   values["CR_VSM_Alive"] = cnt
   values["CR_VSM_ChkSum"] = 0
+  values["CF_VSM_ConfMode"] = 1
+  values["AEB_Status"] = 1  # AEB disabled
   dat = packer.make_can_msg("SCC12", 0, values)[2]
   values["CR_VSM_ChkSum"] = 16 - sum([sum(divmod(i, 16)) for i in dat]) % 16
 
