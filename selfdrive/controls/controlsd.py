@@ -249,6 +249,7 @@ class Controls:
     self.safety_speed = 0
     self.lkas_temporary_off = False
     self.gap_by_spd_on_temp = True
+    #self.openpilotLongitudinalControl = True
     try:
       self.roadname_and_slc = Params().get("RoadList", encoding="utf8").strip().splitlines()[1].split(',')
     except:
