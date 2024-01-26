@@ -114,7 +114,7 @@ def create_hda_mfc(packer, CS, enabled, left_lane, right_lane ):
   # HDA_Icon_State 2 = HDA active
   return packer.make_can_msg("LFAHDA_MFC", 0, values)  
 
-def create_scc11(packer, frame, set_speed, lead_visible, scc_live, lead_dist, lead_vrel, lead_yrel, car_fingerprint, speed, standstill, gap_setting, stopping, radar_recognition, scc11):
+def create_scc11(packer, frame, set_speed, lead_visible, scc_live, lead_dist, lead_vrel, lead_yrel, car_fingerprint, speed, standstill, gap_setting, stopping, radar_recognition, scc11, enabled):
   values = scc11
   values["AliveCounterACC"] = frame // 2 % 0x10
   if not radar_recognition:
@@ -127,15 +127,15 @@ def create_scc11(packer, frame, set_speed, lead_visible, scc_live, lead_dist, le
       values["SCCInfoDisplay"] = 4
     else:
       values["SCCInfoDisplay"] = 0
-  values["DriverAlertDisplay"] = 0
-  values["MainMode_ACC"] = 1
-  values["VSetDis"] = set_speed
-  values["TauGapSet"] = gap_setting
-  values["ObjValid"] = lead_visible
-  values["ACC_ObjStatus"] = lead_visible
-  values["ACC_ObjRelSpd"] = clip(lead_vrel if lead_visible else 0, -20., 20.)
-  values["ACC_ObjDist"] = clip(lead_dist if lead_visible else 204.6, 0., 204.6)
-  values["ACC_ObjLatPos"] = clip(-lead_yrel if lead_visible else 0, -170., 170.)
+    values["DriverAlertDisplay"] = 0
+    values["MainMode_ACC"] = 1
+    values["VSetDis"] = set_speed if enabled else 0
+    values["TauGapSet"] = gap_setting
+    values["ObjValid"] = lead_visible
+    values["ACC_ObjStatus"] = lead_visible
+    values["ACC_ObjRelSpd"] = clip(lead_vrel if lead_visible else 0, -20., 20.)
+    values["ACC_ObjDist"] = clip(lead_dist if lead_visible else 204.6, 0., 204.6)
+    values["ACC_ObjLatPos"] = clip(-lead_yrel if lead_visible else 0, -170., 170.)
 
   return packer.make_can_msg("SCC11", 0, values)
 
@@ -163,7 +163,7 @@ def create_scc12(packer, apply_accel, enabled, scc_live, gaspressed, brakepresse
         else:
           values["StopReq"] = 0
     else:
-      values["ACCMode"] = 1 #0
+      values["ACCMode"] = 0
       values["aReqRaw"] = 0
       values["aReqValue"] = 0
   if not scc_live:
@@ -171,7 +171,7 @@ def create_scc12(packer, apply_accel, enabled, scc_live, gaspressed, brakepresse
       values["StopReq"] = 1
     else:
       values["StopReq"] = 0
-  values["ACCMode"] = 1 #if enabled else 0 # 2 if gas padel pressed
+    values["ACCMode"] = 2 if enabled else 0 # 2 if gas padel pressed
   values["CR_VSM_Alive"] = cnt
   values["CR_VSM_ChkSum"] = 0
   values["CF_VSM_ConfMode"] = 1
@@ -206,7 +206,7 @@ def create_scc14(packer, enabled, scc14, aebcmdact, lead_visible, lead_dist, v_e
     values["JerkLowerLimit"] = 12.7
     values["ComfortBandUpper"] = 0
     values["ComfortBandLower"] = 0
-    values["ACCMode"] = 1 # stock will always be 4 instead of 0 after first disengage
+    values["ACCMode"] = 2 #1 # stock will always be 4 instead of 0 after first disengage
     values["ObjGap"] = int(min(lead_dist+2, 10)/2) if lead_visible else 0 # 1-5 based on distance to lead vehicle
   else:
     values["JerkUpperLimit"] = 0
