@@ -127,15 +127,15 @@ def create_scc11(packer, frame, set_speed, lead_visible, scc_live, lead_dist, le
       values["SCCInfoDisplay"] = 4
     else:
       values["SCCInfoDisplay"] = 0
-    values["DriverAlertDisplay"] = 0
-    values["MainMode_ACC"] = 1
-    values["VSetDis"] = set_speed
-    values["TauGapSet"] = gap_setting
-    values["ObjValid"] = lead_visible
-    values["ACC_ObjStatus"] = lead_visible
-    values["ACC_ObjRelSpd"] = clip(lead_vrel if lead_visible else 0, -20., 20.)
-    values["ACC_ObjDist"] = clip(lead_dist if lead_visible else 204.6, 0., 204.6)
-    values["ACC_ObjLatPos"] = clip(-lead_yrel if lead_visible else 0, -170., 170.)
+  values["DriverAlertDisplay"] = 0
+  values["MainMode_ACC"] = 1
+  values["VSetDis"] = set_speed
+  values["TauGapSet"] = gap_setting
+  values["ObjValid"] = lead_visible
+  values["ACC_ObjStatus"] = lead_visible
+  values["ACC_ObjRelSpd"] = clip(lead_vrel if lead_visible else 0, -20., 20.)
+  values["ACC_ObjDist"] = clip(lead_dist if lead_visible else 204.6, 0., 204.6)
+  values["ACC_ObjLatPos"] = clip(-lead_yrel if lead_visible else 0, -170., 170.)
 
   return packer.make_can_msg("SCC11", 0, values)
 
@@ -152,7 +152,7 @@ def create_scc12(packer, apply_accel, enabled, scc_live, gaspressed, brakepresse
         else:
           values["StopReq"] = 0
     elif enabled and not brakepressed:
-      values["ACCMode"] = 1 #2 if gaspressed and (apply_accel > -0.2) else 1
+      values["ACCMode"] = 2 if gaspressed and (apply_accel > -0.2) else 1
       values["aReqRaw"] = apply_accel
       values["aReqValue"] = apply_accel
       if not radar_recognition and standstill and stopping:
@@ -171,7 +171,7 @@ def create_scc12(packer, apply_accel, enabled, scc_live, gaspressed, brakepresse
       values["StopReq"] = 1
     else:
       values["StopReq"] = 0
-    values["ACCMode"] = 1 #if enabled else 0 # 2 if gas padel pressed
+  values["ACCMode"] = 1 #if enabled else 0 # 2 if gas padel pressed
   values["CR_VSM_Alive"] = cnt
   values["CR_VSM_ChkSum"] = 0
   values["CF_VSM_ConfMode"] = 1
