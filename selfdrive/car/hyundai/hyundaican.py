@@ -152,7 +152,7 @@ def create_scc12(packer, apply_accel, enabled, scc_live, gaspressed, brakepresse
         else:
           values["StopReq"] = 0
     elif enabled and not brakepressed:
-      values["ACCMode"] = 2 if gaspressed and (apply_accel > -0.2) else 1
+      values["ACCMode"] = 1 #2 if gaspressed and (apply_accel > -0.2) else 1
       values["aReqRaw"] = apply_accel
       values["aReqValue"] = apply_accel
       if not radar_recognition and standstill and stopping:
@@ -163,7 +163,7 @@ def create_scc12(packer, apply_accel, enabled, scc_live, gaspressed, brakepresse
         else:
           values["StopReq"] = 0
     else:
-      values["ACCMode"] = 0
+      values["ACCMode"] = 1 #0
       values["aReqRaw"] = 0
       values["aReqValue"] = 0
   if not scc_live:
@@ -171,7 +171,7 @@ def create_scc12(packer, apply_accel, enabled, scc_live, gaspressed, brakepresse
       values["StopReq"] = 1
     else:
       values["StopReq"] = 0
-    values["ACCMode"] = 1 if enabled else 0 # 2 if gas padel pressed
+    values["ACCMode"] = 1 #if enabled else 0 # 2 if gas padel pressed
   values["CR_VSM_Alive"] = cnt
   values["CR_VSM_ChkSum"] = 0
   values["CF_VSM_ConfMode"] = 1
