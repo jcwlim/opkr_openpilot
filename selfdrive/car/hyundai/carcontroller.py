@@ -113,7 +113,7 @@ class CarController():
     self.stopped = False
     self.stoppingdist = float(Decimal(self.params.get("StoppingDist", encoding="utf8"))*Decimal('0.1'))
 
-    self.longcontrol = CP.openpilotLongitudinalControl
+    self.longcontrol = True #CP.openpilotLongitudinalControl
     #self.scc_live is true because CP.radarOffCan is False
     self.scc_live = not CP.radarOffCan
 
@@ -472,16 +472,16 @@ class CarController():
                                    cut_steer_temp, CS.lkas11, sys_warning, sys_state, enabled, left_lane, right_lane,
                                    left_lane_warning, right_lane_warning, 0, self.ldws_fix, self.lkas11_cnt))
 
-    if CS.CP.sccBus: # send lkas11 bus 1 or 2 if scc bus is
-      can_sends.append(create_lkas11(self.packer, frame, self.car_fingerprint, apply_steer, lkas_active and not self.lkas_temp_disabled,
-                                   cut_steer_temp, CS.lkas11, sys_warning, sys_state, enabled, left_lane, right_lane,
-                                   left_lane_warning, right_lane_warning, CS.CP.sccBus, self.ldws_fix, self.lkas11_cnt))
-    if CS.CP.mdpsBus: # send lkas11 bus 1 if mdps is bus 1
-      can_sends.append(create_lkas11(self.packer, frame, self.car_fingerprint, apply_steer, lkas_active and not self.lkas_temp_disabled,
-                                   cut_steer_temp, CS.lkas11, sys_warning, sys_state, enabled, left_lane, right_lane,
-                                   left_lane_warning, right_lane_warning, 1, self.ldws_fix, self.lkas11_cnt))
-      if frame % 2: # send clu11 to mdps if it is not on bus 0
-        can_sends.append(create_clu11(self.packer, frame, CS.clu11, Buttons.NONE, enabled_speed, CS.CP.mdpsBus))
+    # if CS.CP.sccBus: # send lkas11 bus 1 or 2 if scc bus is
+    #   can_sends.append(create_lkas11(self.packer, frame, self.car_fingerprint, apply_steer, lkas_active and not self.lkas_temp_disabled,
+    #                                cut_steer_temp, CS.lkas11, sys_warning, sys_state, enabled, left_lane, right_lane,
+    #                                left_lane_warning, right_lane_warning, CS.CP.sccBus, self.ldws_fix, self.lkas11_cnt))
+    # if CS.CP.mdpsBus: # send lkas11 bus 1 if mdps is bus 1
+    #   can_sends.append(create_lkas11(self.packer, frame, self.car_fingerprint, apply_steer, lkas_active and not self.lkas_temp_disabled,
+    #                                cut_steer_temp, CS.lkas11, sys_warning, sys_state, enabled, left_lane, right_lane,
+    #                                left_lane_warning, right_lane_warning, 1, self.ldws_fix, self.lkas11_cnt))
+    #   if frame % 2: # send clu11 to mdps if it is not on bus 0
+    #     can_sends.append(create_clu11(self.packer, frame, CS.clu11, Buttons.NONE, enabled_speed, CS.CP.mdpsBus))
 
     if CS.out.cruiseState.modeSel == 0 and self.mode_change_switch == 5:
       self.mode_change_timer = 50
@@ -916,10 +916,10 @@ class CarController():
     if CS.CP.mdpsBus: # send mdps12 to LKAS to prevent LKAS error
       can_sends.append(create_mdps12(self.packer, frame, CS.mdps12))
 
-    # # tester present - w/ no response (keeps radar disabled)
-    # if CS.CP.openpilotLongitudinalControl:
-    #   if (frame % 100) == 0:
-    #     can_sends.append([0x7D0, 0, b"\x02\x3E\x80\x00\x00\x00\x00\x00", 0])
+    # tester present - w/ no response (keeps radar disabled)
+    if CS.CP.openpilotLongitudinalControl:
+      if (frame % 100) == 0:
+        can_sends.append([0x7d0, 0, b"\x02\x3E\x80\x00\x00\x00\x00\x00", 0])
 
     # if frame % 2 == 0 and CS.CP.openpilotLongitudinalControl:
     #   lead_visible = False
@@ -1175,8 +1175,9 @@ class CarController():
         can_sends.append(create_scc42a(self.packer))
     elif (CS.CP.sccBus != 0 or self.radarDisableActivated) and self.longcontrol:
       if self.radar_disabled_conf:
-        self.fca11alivecnt = CS.fca11init["CR_FCA_Alive"]
-        self.fca11supcnt = CS.fca11init["Supplemental_Counter"]
+        print("no fca11")
+        # self.fca11alivecnt = CS.fca11init["CR_FCA_Alive"]
+        # self.fca11supcnt = CS.fca11init["Supplemental_Counter"]
       self.counter_init = True
       self.scc12cnt = CS.scc12init["CR_VSM_Alive"]
       self.scc11cnt = CS.scc11init["AliveCounterACC"]
